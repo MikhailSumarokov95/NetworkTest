@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using Mirror.Authenticators;
@@ -25,12 +23,12 @@ public class ConnectingPanel : MonoBehaviour
         {
             StartButtons();
         }
+
         else
         {
             StatusLabels();
         }
 
-        // client ready
         if (NetworkClient.isConnected && !NetworkClient.ready)
         {
             if (GUILayout.Button("Client Ready"))
@@ -52,7 +50,6 @@ public class ConnectingPanel : MonoBehaviour
     {
         if (!NetworkClient.active)
         {
-            // Server + Client
             if (Application.platform != RuntimePlatform.WebGLPlayer)
             {
                 if (GUILayout.Button("Host (Server + Client)"))
@@ -65,7 +62,6 @@ public class ConnectingPanel : MonoBehaviour
                 }
             }
 
-            // Client + IP
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Client"))
             {
@@ -73,16 +69,13 @@ public class ConnectingPanel : MonoBehaviour
                 basicAuthenticator.SetPassClient(passwordServer);
                 manager.StartClient();
             }
-            // This updates networkAddress every frame from the TextField
-            //manager.networkAddress = GUILayout.TextField(manager.networkAddress);
+
             nameServer = GUILayout.TextField(nameServer);
             passwordServer = GUILayout.TextField(passwordServer);
             GUILayout.EndHorizontal();
 
-            // Server Only
             if (Application.platform == RuntimePlatform.WebGLPlayer)
             {
-                // cant be a server in webgl build
                 GUILayout.Box("(  WebGL cannot be server  )");
             }
             else
@@ -97,7 +90,6 @@ public class ConnectingPanel : MonoBehaviour
         }
         else
         {
-            // Connecting
             GUILayout.Label($"Connecting to {manager.networkAddress}..");
             if (GUILayout.Button("Cancel Connection Attempt"))
             {
@@ -109,20 +101,16 @@ public class ConnectingPanel : MonoBehaviour
 
     private void StatusLabels()
     {
-        // host mode
-        // display separately because this always confused people:
-        //   Server: ...
-        //   Client: ...
         if (NetworkServer.active && NetworkClient.active)
         {
             GUILayout.Label($"<b>Host</b>: running via {Transport.active}");
         }
-        // server only
+
         else if (NetworkServer.active)
         {
             GUILayout.Label($"<b>Server</b>: running via {Transport.active}");
         }
-        // client only
+
         else if (NetworkClient.isConnected)
         {
             GUILayout.Label($"<b>Client</b>: connected to {manager.networkAddress} via {Transport.active}");
@@ -131,7 +119,6 @@ public class ConnectingPanel : MonoBehaviour
 
     private void StopButtons()
     {
-        // stop host if host mode
         if (NetworkServer.active && NetworkClient.isConnected)
         {
             if (GUILayout.Button("Stop Host"))
@@ -139,7 +126,7 @@ public class ConnectingPanel : MonoBehaviour
                 manager.StopHost();
             }
         }
-        // stop client if client-only
+
         else if (NetworkClient.isConnected)
         {
             if (GUILayout.Button("Stop Client"))
@@ -147,7 +134,7 @@ public class ConnectingPanel : MonoBehaviour
                 manager.StopClient();
             }
         }
-        // stop server if server-only
+
         else if (NetworkServer.active)
         {
             if (GUILayout.Button("Stop Server"))
